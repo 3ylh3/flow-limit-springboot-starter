@@ -3,13 +3,13 @@
 # 使用
 引入jar包：
 
-`xml
+```xml
 <dependency>
    <groupId>com.xiaobai</groupId>
    <artifactId>flow-limit-springboot-starter</artifactId>
    <version>1.0.0</version>
 </dependency>
-`
+```
 
 在需要流控的方法上添加@FlowLimit注解（该方法需为controller中使用@RequestMapping注解的方法）:
 ```java
