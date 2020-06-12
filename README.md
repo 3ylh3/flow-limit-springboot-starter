@@ -21,3 +21,4 @@ public String test() {
 ```
 注解中interval参数为生成令牌的时间间隔(毫秒)，默认为1000ms；maxTokenNums为最大令牌数量，默认为500；message为触发流控后的返回信息，默认为"Flow limit,please try later"。
 # 下载
+https://github.com/3ylh3/flow-limit-springboot-starter/releases
