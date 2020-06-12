@@ -2,6 +2,7 @@
 基于令牌桶算法的简单流量控制组件，控制粒度到接口方法级别。
 # 使用
 引入jar包：
+
 `xml
 <dependency>
    <groupId>com.xiaobai</groupId>
@@ -9,6 +10,7 @@
    <version>1.0.0</version>
 </dependency>
 `
+
 在需要流控的方法上添加@FlowLimit注解（该方法需为controller中使用@RequestMapping注解的方法）:
 ```java
 @RequestMapping("/test")
