@@ -18,7 +18,7 @@ public @interface FlowLimit {
      * 生成令牌时间间隔
      * @return
      */
-    long interval() default 10000;
+    long interval() default 1000;
 
     /**
      * 最大令牌数
