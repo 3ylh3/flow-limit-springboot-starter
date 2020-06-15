@@ -28,6 +28,7 @@ public class FlowLimitAspect {
     private Map<String, Long> tokenMap = new ConcurrentHashMap<>();
     private static final String MILLIS = "millis";
     private static final String TOKEN = "token";
+    private static final String FALSE = "false";
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
@@ -56,7 +57,7 @@ public class FlowLimitAspect {
             long curMillis = System.currentTimeMillis();
             Long tokenNums = null;
             Long millis = null;
-            if(distributed.equals("false")) {
+            if(FALSE.equals(distributed)) {
                 tokenNums = tokenMap.get(path);
                 millis = millisMap.get(path);
             } else {
@@ -79,14 +80,14 @@ public class FlowLimitAspect {
                     tokenNums = maxTokenNums;
                 }
             }
-            if(distributed.equals("false")) {
+            if(FALSE.equals(distributed)) {
                 millisMap.put(path, curMillis);
             } else {
                 redisTemplate.opsForHash().put(path, MILLIS, String.valueOf(curMillis));
             }
             if (tokenNums > 0) {
                 tokenNums--;
-                if(distributed.equals("false")) {
+                if(FALSE.equals(distributed)) {
                     tokenMap.put(path, tokenNums);
                 } else {
                     redisTemplate.opsForHash().put(path, TOKEN, String.valueOf(tokenNums));
