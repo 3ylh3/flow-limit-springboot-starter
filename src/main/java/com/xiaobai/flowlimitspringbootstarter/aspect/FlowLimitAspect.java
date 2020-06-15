@@ -6,6 +6,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Method;
@@ -20,8 +22,18 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Aspect
 public class FlowLimitAspect {
+    private String distributed;
+
     private Map<String, Long> millisMap = new ConcurrentHashMap<>();
     private Map<String, Long> tokenMap = new ConcurrentHashMap<>();
+    private static final String MILLIS = "millis";
+    private static final String TOKEN = "token";
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
+    public FlowLimitAspect(String distributed) {
+        this.distributed = distributed;
+    }
 
     @Pointcut("@annotation(com.xiaobai.flowlimitspringbootstarter.annotation.FlowLimit)")
     public void flowLimit() {
@@ -42,11 +54,24 @@ public class FlowLimitAspect {
             long maxTokenNums = flowLimit.maxTokenNums();
             String path = requestMapping.value()[0];
             long curMillis = System.currentTimeMillis();
-            Long tokenNums = tokenMap.get(path);
+            Long tokenNums = null;
+            Long millis = null;
+            if(distributed.equals("false")) {
+                tokenNums = tokenMap.get(path);
+                millis = millisMap.get(path);
+            } else {
+                String tokenStr = (String)redisTemplate.opsForHash().get(path, TOKEN);
+                if(null != tokenStr) {
+                    tokenNums = Long.valueOf(tokenStr);
+                }
+                String millisStr = (String)redisTemplate.opsForHash().get(path, MILLIS);
+                if(null != millisStr) {
+                    millis = Long.valueOf(millisStr);
+                }
+            }
             if(null == tokenNums) {
                 tokenNums = maxTokenNums;
             }
-            Long millis = millisMap.get(path);
             if (null != millis) {
                 long nums = (curMillis - millis) / interval;
                 tokenNums += nums;
@@ -54,10 +79,18 @@ public class FlowLimitAspect {
                     tokenNums = maxTokenNums;
                 }
             }
-            millisMap.put(path, curMillis);
+            if(distributed.equals("false")) {
+                millisMap.put(path, curMillis);
+            } else {
+                redisTemplate.opsForHash().put(path, MILLIS, String.valueOf(curMillis));
+            }
             if (tokenNums > 0) {
                 tokenNums--;
-                tokenMap.put(path, tokenNums);
+                if(distributed.equals("false")) {
+                    tokenMap.put(path, tokenNums);
+                } else {
+                    redisTemplate.opsForHash().put(path, TOKEN, String.valueOf(tokenNums));
+                }
                 return (String) pjp.proceed();
             } else {
                 return flowLimit.message();
