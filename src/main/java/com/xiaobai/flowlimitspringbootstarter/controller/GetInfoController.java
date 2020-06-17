@@ -16,7 +16,7 @@ public class GetInfoController {
     @Autowired
     private FlowLimitAspect flowLimitAspect;
 
-    @RequestMapping("/info")
+    @RequestMapping("/flowLimitInfo")
     public String getInfo() {
         return flowLimitAspect.getInfo();
     }
