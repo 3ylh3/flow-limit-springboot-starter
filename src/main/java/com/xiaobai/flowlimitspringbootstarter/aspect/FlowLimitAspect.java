@@ -218,4 +218,18 @@ public class FlowLimitAspect {
             return JSON.toJSONString(map);
         }
     }
+
+    public String getServiceInfo(String service) {
+        if(FALSE.equals(distributed)) {
+            Map<String, Long> map = infoMap.get(service);
+            return JSON.toJSONString(map);
+        } else {
+            //项目重启后清楚历史记录
+            if(!cleanFlag) {
+                cleanReids();
+            }
+            Map<Object, Object> map = redisTemplate.opsForHash().entries(INFO_KEY);
+            return (String)map.get(service);
+        }
+    }
 }
