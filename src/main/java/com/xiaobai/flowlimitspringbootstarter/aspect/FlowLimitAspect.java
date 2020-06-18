@@ -204,7 +204,7 @@ public class FlowLimitAspect {
         if(FALSE.equals(distributed)) {
             return JSON.toJSONString(infoMap);
         } else {
-            //项目重启后清楚历史记录
+            //项目重启后清除历史记录
             if(!cleanFlag) {
                 cleanReids();
             }
@@ -224,7 +224,7 @@ public class FlowLimitAspect {
             Map<String, Long> map = infoMap.get(service);
             return JSON.toJSONString(map);
         } else {
-            //项目重启后清楚历史记录
+            //项目重启后清除历史记录
             if(!cleanFlag) {
                 cleanReids();
             }
