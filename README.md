@@ -30,5 +30,8 @@ spring.redis.host=127.0.0.1
 #redis端口
 spring.redis.port=6379
 ```
+# 使用仪表盘
+https://github.com/3ylh3/flow-limit-dashboard-springboot-starter
+
 # 下载
 https://github.com/3ylh3/flow-limit-springboot-starter/releases
