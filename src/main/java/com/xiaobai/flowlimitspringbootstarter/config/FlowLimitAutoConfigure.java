@@ -1,6 +1,7 @@
 package com.xiaobai.flowlimitspringbootstarter.config;
 
 import com.xiaobai.flowlimitspringbootstarter.aspect.FlowLimitAspect;
+import com.xiaobai.flowlimitspringbootstarter.controller.GetInfoController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,5 +28,11 @@ public class FlowLimitAutoConfigure {
         } else {
             return new FlowLimitAspect(properties.getDistributed());
         }
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public GetInfoController initGetInfoController() {
+        return new GetInfoController();
     }
 }
